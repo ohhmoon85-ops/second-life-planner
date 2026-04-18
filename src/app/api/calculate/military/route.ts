@@ -1,10 +1,8 @@
 export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { calcMilitaryPension } from '@/lib/calculators/military-pension'
-import { auth } from '@/lib/auth'
-import { db } from '@/lib/db'
-import { calculations } from '@/lib/db/schema'
 
 const inputSchema = z.object({
   birthDate: z.string().min(1),
@@ -35,15 +33,20 @@ export async function POST(request: NextRequest) {
     const result = calcMilitaryPension(parsed.data)
 
     // 로그인된 사용자라면 계산 결과 저장 (실패해도 응답에는 영향 없음)
-    const session = await auth()
-    if (session?.user?.id) {
-      await db.insert(calculations).values({
-        userId: session.user.id,
-        type: 'military',
-        input: parsed.data,
-        result,
-      }).catch(() => {})
-    }
+    try {
+      const { auth } = await import('@/lib/auth')
+      const { db } = await import('@/lib/db')
+      const { calculations } = await import('@/lib/db/schema')
+      const session = await auth()
+      if (session?.user?.id) {
+        await db.insert(calculations).values({
+          userId: session.user.id,
+          type: 'military',
+          input: parsed.data,
+          result,
+        })
+      }
+    } catch { /* DB 저장 실패는 무시 */ }
 
     return NextResponse.json(result)
   } catch (err) {
