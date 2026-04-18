@@ -33,19 +33,19 @@ export default function HomePage() {
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/simulator/military"
+              href="/simulator/health-insurance"
               className="btn-primary px-8 py-4 text-lg rounded-xl inline-flex items-center justify-center gap-2"
             >
-              <Calculator className="h-5 w-5" aria-hidden="true" />
-              무료로 군인연금 계산하기
+              <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+              무료로 건보료 계산하기
             </Link>
-            <a
-              href="#about"
+            <Link
+              href="/simulator/reemployment"
               className="btn-outline border-white text-white hover:bg-white hover:text-primary px-8 py-4 text-lg rounded-xl inline-flex items-center justify-center gap-2"
             >
-              <FileText className="h-5 w-5" aria-hidden="true" />
-              어떤 서비스인가요?
-            </a>
+              <RefreshCw className="h-5 w-5" aria-hidden="true" />
+              재취업 시나리오 비교
+            </Link>
           </div>
         </div>
       </section>
@@ -101,19 +101,25 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <SolutionCard
-              icon={<Calculator className="h-7 w-7 text-primary" />}
-              title="정확한 연금 계산"
-              desc="2026년 최신 군인연금법·소득세법 기준. ±1% 오차 이내 보장"
-            />
-            <SolutionCard
               icon={<CheckCircle2 className="h-7 w-7 text-primary" />}
-              title="건보료 피부양자 시뮬레이션"
-              desc="연금 수령 시 피부양자 유지 가능 여부와 납부할 보험료 자동 계산"
+              title="건보료 피부양자 판정"
+              desc="연금 수령 시 피부양자 유지 가능 여부와 옵션별 보험료 비교. 연간 절약액 자동 계산"
+              href="/simulator/health-insurance"
+              ctaLabel="건보료 계산하기 →"
             />
             <SolutionCard
               icon={<RefreshCw className="h-7 w-7 text-primary" />}
-              title="재취업 4가지 시나리오"
-              desc="공무원·민간·자영업·무직 케이스별 최적 타이밍 비교"
+              title="재취업 5가지 시나리오"
+              desc="공무원·공공기관·민간·자영업·무직별 군인연금 삭감액 + 건보료 + 실수령액 비교"
+              href="/simulator/reemployment"
+              ctaLabel="시나리오 비교하기 →"
+            />
+            <SolutionCard
+              icon={<Calculator className="h-7 w-7 text-primary" />}
+              title="군인연금 세금 계산"
+              desc="2026년 최신 군인연금법·소득세법 기준. 연금소득공제·지방소득세 포함 ±1% 보장"
+              href="/simulator/military"
+              ctaLabel="연금 계산하기 →"
             />
           </div>
         </div>
@@ -287,17 +293,22 @@ function SolutionCard({
   icon,
   title,
   desc,
+  href,
+  ctaLabel,
 }: {
   icon: React.ReactNode
   title: string
   desc: string
+  href: string
+  ctaLabel: string
 }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-5 text-center hover:shadow-md transition-shadow">
-      <div className="flex justify-center mb-3">{icon}</div>
+    <Link href={href} className="block bg-white border border-gray-200 rounded-xl p-5 text-center hover:shadow-lg hover:border-primary/30 transition-all group">
+      <div className="flex justify-center mb-3 group-hover:scale-110 transition-transform">{icon}</div>
       <h3 className="font-semibold text-gray-900 mb-2">{title}</h3>
-      <p className="text-sm text-gray-600 leading-relaxed">{desc}</p>
-    </div>
+      <p className="text-sm text-gray-600 leading-relaxed mb-3">{desc}</p>
+      <span className="text-sm font-medium text-accent group-hover:underline">{ctaLabel}</span>
+    </Link>
   )
 }
 
