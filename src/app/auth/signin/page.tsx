@@ -1,33 +1,21 @@
-import { signIn } from '@/lib/auth'
-import { Shield } from 'lucide-react'
+export const dynamic = 'force-dynamic'
+
+import SignInForm from './SignInForm'
 
 export default function SignInPage() {
   return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm text-center">
         <div className="flex justify-center mb-4">
-          <Shield className="h-12 w-12 text-accent" aria-hidden="true" />
+          <svg className="h-12 w-12 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
         </div>
         <h1 className="text-2xl font-bold text-primary mb-2">로그인</h1>
         <p className="text-gray-500 text-sm mb-8">
           계산 결과를 저장하고 이력을 관리하려면 로그인하세요
         </p>
-
-        <form
-          action={async () => {
-            'use server'
-            await signIn('kakao', { redirectTo: '/simulator/military' })
-          }}
-        >
-          <button
-            type="submit"
-            className="w-full flex items-center justify-center gap-3 bg-[#FEE500] hover:bg-yellow-400 text-gray-900 font-semibold py-4 rounded-xl transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500 text-base"
-          >
-            <KakaoIcon />
-            카카오로 시작하기
-          </button>
-        </form>
-
+        <SignInForm />
         <p className="mt-6 text-xs text-gray-400 leading-relaxed">
           로그인 시 이용약관 및 개인정보처리방침에 동의하는 것으로 간주합니다.
           <br />
@@ -35,18 +23,5 @@ export default function SignInPage() {
         </p>
       </div>
     </main>
-  )
-}
-
-function KakaoIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M9 0C4.029 0 0 3.138 0 7.01c0 2.49 1.568 4.674 3.938 5.914l-.957 3.572a.35.35 0 0 0 .533.38L7.76 14.52A10.77 10.77 0 0 0 9 14.02C13.971 14.02 18 10.882 18 7.01 18 3.138 13.971 0 9 0Z"
-        fill="#000"
-      />
-    </svg>
   )
 }
