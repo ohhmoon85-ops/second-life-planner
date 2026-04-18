@@ -5,7 +5,9 @@ import AuthButton from '@/components/auth/AuthButton'
 const navLinks = [
   { href: '/simulator/health-insurance', label: '건보료 계산' },
   { href: '/simulator/reemployment',     label: '재취업 시나리오' },
-  { href: '/simulator/military',         label: '군인연금' },
+  { href: '/simulator/tax-comparison',   label: '세금 비교' },
+  { href: '/simulator/pension-portfolio',label: '연금 포트폴리오' },
+  { href: '/simulator/asset-optimizer',  label: '자산 최적화' },
 ]
 
 export default function Header() {
@@ -22,7 +24,7 @@ export default function Header() {
           </Link>
 
           <nav aria-label="주 메뉴" className="flex items-center gap-1">
-            <ul className="hidden md:flex items-center gap-1" role="list">
+            <ul className="hidden lg:flex items-center gap-1" role="list">
               {navLinks.map(({ href, label }) => (
                 <li key={href}>
                   <Link href={href}
@@ -33,24 +35,29 @@ export default function Header() {
               ))}
             </ul>
 
-            {/* 모바일 드롭다운 */}
-            <details className="md:hidden relative group">
+            {/* 모바일/태블릿 드롭다운 */}
+            <details className="lg:hidden relative group">
               <summary className="list-none px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer select-none">
                 메뉴 ▾
               </summary>
-              <div className="absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50">
+              <div className="absolute right-0 mt-1 w-52 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50">
                 {navLinks.map(({ href, label }) => (
                   <Link key={href} href={href}
                     className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
                     {label}
                   </Link>
                 ))}
+                <div className="border-t my-1" />
+                <Link href="/simulator/military"
+                  className="block px-4 py-3 text-sm text-gray-500 hover:bg-gray-50">
+                  군인연금 계산기
+                </Link>
               </div>
             </details>
 
-            <Link href="/#pricing"
+            <Link href="/report"
               className="ml-1 px-3 py-2 text-sm font-medium bg-accent text-white hover:bg-orange-700 rounded-lg transition-colors">
-              리포트
+              AI 리포트
             </Link>
             <div className="ml-1">
               <AuthButton />

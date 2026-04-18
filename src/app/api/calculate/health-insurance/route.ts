@@ -9,6 +9,9 @@ const schema = z.object({
   annualBusinessIncome: z.number().int().min(0).optional(),
   propertyTaxBase: z.number().int().min(0).optional(),
   hasSpouseWithInsurance: z.boolean().optional(),
+  spouseMonthlyPension: z.number().int().min(0).optional(),
+  spouseAnnualOtherIncome: z.number().int().min(0).optional(),
+  spousePropertyTaxBase: z.number().int().min(0).optional(),
   prevMonthlySalary: z.number().int().min(0),
   yearsOfInsuredEmployment: z.number().int().min(0),
 })

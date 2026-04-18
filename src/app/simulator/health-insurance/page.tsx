@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2, CheckCircle2, XCircle, AlertCircle, Info, ChevronDown, ChevronUp } from 'lucide-react'
+import { Loader2, CheckCircle2, XCircle, AlertTriangle, Info, ChevronDown, ChevronUp } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
-import type { HealthInsuranceResult, HealthPremiumOption } from '@/lib/types/health-insurance'
+import type { HealthInsuranceResult, HealthPremiumOption, CoupleDependent } from '@/lib/types/health-insurance'
 
 const schema = z.object({
   monthlyMilitaryPension: z.number({ invalid_type_error: '월 연금액을 입력하세요' }).int().min(100_000, '10만원 이상 입력'),
@@ -15,6 +15,9 @@ const schema = z.object({
   annualBusinessIncome: z.number().int().min(0).optional(),
   propertyTaxBase: z.number().int().min(0).optional(),
   hasSpouseWithInsurance: z.boolean(),
+  spouseMonthlyPension: z.number().int().min(0).optional(),
+  spouseAnnualOtherIncome: z.number().int().min(0).optional(),
+  spousePropertyTaxBase: z.number().int().min(0).optional(),
   prevMonthlySalary: z.number({ invalid_type_error: '퇴직 전 월급을 입력하세요' }).int().min(1_000_000),
   yearsOfInsuredEmployment: z.number({ invalid_type_error: '가입 기간을 입력하세요' }).int().min(0).max(600),
 })
@@ -25,6 +28,7 @@ export default function HealthInsurancePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showBasis, setShowBasis] = useState(false)
+  const [showSpouseFields, setShowSpouseFields] = useState(false)
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -62,7 +66,7 @@ export default function HealthInsurancePage() {
       <div className="bg-primary text-white py-8 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">건강보험료 시뮬레이터</h1>
-          <p className="text-primary-200 text-base">퇴직 후 건보료 옵션 비교 및 피부양자 자격 판정</p>
+          <p className="text-primary-200 text-base">퇴직 후 건보료 옵션 비교 · 피부양자 자격 판정 · 부부 동반 탈락 시뮬레이션</p>
         </div>
       </div>
 
@@ -118,6 +122,31 @@ export default function HealthInsurancePage() {
                           hasSpouse ? 'translate-x-8' : 'translate-x-1')} />
                       </button>
                     </div>
+
+                    {/* 배우자 소득 정보 (부부 동반 탈락 시뮬레이션) */}
+                    <div className="border-t pt-3">
+                      <button type="button"
+                        onClick={() => setShowSpouseFields(!showSpouseFields)}
+                        className="flex items-center gap-2 text-sm font-medium text-primary">
+                        {showSpouseFields ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        배우자 소득 입력 (부부 동반 탈락 시뮬레이션)
+                      </button>
+                      <p className="text-xs text-gray-400 mt-1">배우자도 연금수령자인 경우, 부부 모두 피부양자 탈락 여부를 확인합니다</p>
+
+                      {showSpouseFields && (
+                        <div className="mt-3 space-y-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                          <Field label="배우자 월 연금액 (원)" id="spouseMonthlyPension" helper="군인·공무원·사학·국민연금 합계">
+                            <MoneyInput id="spouseMonthlyPension" onChange={handleMoneyInput('spouseMonthlyPension')} placeholder="없으면 빈칸" />
+                          </Field>
+                          <Field label="배우자 기타 연간 소득 (원)" id="spouseAnnualOtherIncome" helper="임대·금융소득 등">
+                            <MoneyInput id="spouseAnnualOtherIncome" onChange={handleMoneyInput('spouseAnnualOtherIncome')} placeholder="없으면 빈칸" />
+                          </Field>
+                          <Field label="배우자 재산세 과표 (원)" id="spousePropertyTaxBase">
+                            <MoneyInput id="spousePropertyTaxBase" onChange={handleMoneyInput('spousePropertyTaxBase')} placeholder="없으면 빈칸" />
+                          </Field>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </Card>
 
@@ -152,6 +181,11 @@ export default function HealthInsurancePage() {
                 {/* 피부양자 판정 배너 */}
                 <DependentBanner result={result} />
 
+                {/* 부부 동반 탈락 경고 */}
+                {result.coupleCheck && (
+                  <CoupleBanner couple={result.coupleCheck} />
+                )}
+
                 {/* 옵션 비교 카드 */}
                 <div className="bg-white rounded-lg border border-gray-200 p-5">
                   <h2 className="text-lg font-semibold text-gray-800 mb-4">보험료 옵션 비교</h2>
@@ -182,15 +216,11 @@ export default function HealthInsurancePage() {
                 <div className="bg-white rounded-lg border border-gray-200 p-5">
                   <h2 className="text-lg font-semibold text-gray-800 mb-3">연간 합산 소득 내역</h2>
                   <div className="space-y-2">
-                    <IncomeRow label="군인연금 (연)" value={result.annualTotalIncome} />
-                    <div className="border-t pt-2 flex justify-between font-semibold">
-                      <span>합산 소득</span>
-                      <span>{result.annualTotalIncome.toLocaleString('ko-KR')}원</span>
-                    </div>
+                    <IncomeRow label="합산 소득 (연)" value={result.annualTotalIncome} />
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">피부양자 기준 (3,400만원)</span>
-                      <span className={result.annualTotalIncome <= 34_000_000 ? 'text-success font-medium' : 'text-danger font-medium'}>
-                        {result.annualTotalIncome <= 34_000_000 ? '✅ 기준 충족' : '❌ 기준 초과'}
+                      <span className="text-gray-500">피부양자 기준 (2,000만원)</span>
+                      <span className={result.annualTotalIncome <= 20_000_000 ? 'text-success font-medium' : 'text-danger font-medium'}>
+                        {result.annualTotalIncome <= 20_000_000 ? '✅ 기준 충족' : '❌ 기준 초과'}
                       </span>
                     </div>
                   </div>
@@ -236,7 +266,7 @@ function DependentBanner({ result }: { result: HealthInsuranceResult }) {
   const eligible = result.dependentEligible
   const statusMsg: Record<string, string> = {
     eligible: '피부양자 소득·재산 기준 충족',
-    ineligible_income: `연 합산소득 ${(result.annualTotalIncome / 10000).toFixed(0)}만원 → 3,400만원 초과로 피부양자 불가`,
+    ineligible_income: `연 합산소득 ${(result.annualTotalIncome / 10000).toFixed(0)}만원 → 2,000만원 초과로 피부양자 불가`,
     ineligible_property: '재산세 과표 기준 초과로 피부양자 불가',
     ineligible_business: '사업소득 있음 → 피부양자 자격 상실 (금액 무관)',
   }
@@ -251,6 +281,33 @@ function DependentBanner({ result }: { result: HealthInsuranceResult }) {
           피부양자 자격: {eligible ? '유지 가능' : '불가'}
         </p>
         <p className="text-sm text-gray-700 mt-1">{statusMsg[result.dependentStatus]}</p>
+      </div>
+    </div>
+  )
+}
+
+function CoupleBanner({ couple }: { couple: CoupleDependent }) {
+  if (!couple.warningMessage) return null
+  const isBothOut = couple.bothDisqualified
+  return (
+    <div className={cn('rounded-lg p-5 flex items-start gap-3',
+      isBothOut ? 'bg-red-50 border border-danger/30' : 'bg-amber-50 border border-amber-300')}>
+      <AlertTriangle className={cn('h-6 w-6 flex-shrink-0 mt-0.5', isBothOut ? 'text-danger' : 'text-amber-500')} />
+      <div>
+        <p className={cn('font-semibold text-base mb-1', isBothOut ? 'text-danger' : 'text-amber-700')}>
+          {isBothOut ? '부부 동반 피부양자 탈락' : '배우자 피부양자 상태 변동'}
+        </p>
+        <p className="text-sm text-gray-700">{couple.warningMessage}</p>
+        <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+          <div className={cn('rounded p-2', couple.selfEligible ? 'bg-success/10 text-success' : 'bg-red-100 text-danger')}>
+            본인: {couple.selfEligible ? '✅ 자격 유지' : '❌ 탈락'}<br />
+            연소득 {(couple.selfAnnualIncome / 10000).toFixed(0)}만원
+          </div>
+          <div className={cn('rounded p-2', couple.spouseEligible ? 'bg-success/10 text-success' : 'bg-red-100 text-danger')}>
+            배우자: {couple.spouseEligible ? '✅ 자격 유지' : '❌ 탈락'}<br />
+            연소득 {(couple.spouseAnnualIncome / 10000).toFixed(0)}만원
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -301,7 +358,8 @@ function EmptyState() {
       <div className="p-4 bg-blue-50 rounded-lg text-left max-w-sm mx-auto">
         <p className="text-sm font-medium text-blue-700 mb-2">이 계산기가 알려드리는 것</p>
         <ul className="text-sm text-blue-600 space-y-1">
-          <li>· 피부양자 자격 유지 가능 여부</li>
+          <li>· 피부양자 자격 유지 가능 여부 (2,000만원 기준)</li>
+          <li>· 부부 동반 탈락 시뮬레이션</li>
           <li>· 지역가입자 전환 시 월 보험료</li>
           <li>· 임의계속가입 vs 지역가입자 비교</li>
           <li>· 최적 선택 시 연간 절약액</li>

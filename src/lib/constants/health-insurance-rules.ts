@@ -12,7 +12,7 @@ export const HEALTH_INSURANCE_RULES_2026 = {
   LTCI_RATE: 0.1295,
 
   // ── 피부양자 자격 기준 (건강보험법 시행규칙 제2조) ──────
-  DEPENDENT_INCOME_LIMIT: 34_000_000,      // 연간 합산소득 3,400만원 이하
+  DEPENDENT_INCOME_LIMIT: 20_000_000,      // 연간 합산소득 2,000만원 이하 (건강보험법 시행규칙 제2조)
   DEPENDENT_PROPERTY_LIMIT_1: 540_000_000, // 재산세 과세표준 5.4억 이하 (무조건 유지)
   DEPENDENT_PROPERTY_LIMIT_2: 900_000_000, // 5.4억~9억: 소득 1천만원 이하 조건
   DEPENDENT_PROPERTY_INCOME_LIMIT: 10_000_000, // 재산 5.4억 초과 시 소득 한도

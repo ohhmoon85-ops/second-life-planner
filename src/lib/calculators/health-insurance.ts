@@ -4,15 +4,11 @@ import type {
   HealthInsuranceResult,
   HealthPremiumOption,
   DependentStatus,
+  CoupleDependent,
 } from '@/lib/types/health-insurance'
 
 const R = HEALTH_INSURANCE_RULES_2026
 
-/**
- * 연간 합산 소득 계산 (건강보험 기준)
- * - 군인연금: 연금소득
- * - 임대소득, 금융소득, 사업소득 포함
- */
 export function calcAnnualTotalIncome(input: HealthInsuranceInput): number {
   const pension = input.monthlyMilitaryPension * 12
   const rental = input.annualRentalIncome ?? 0
@@ -21,27 +17,15 @@ export function calcAnnualTotalIncome(input: HealthInsuranceInput): number {
   return pension + rental + financial + business
 }
 
-/**
- * 피부양자 자격 판정 (건강보험법 시행규칙 제2조)
- */
 export function judgeDependentStatus(input: HealthInsuranceInput): DependentStatus {
-  // 사업소득이 있으면 무조건 불가
-  if ((input.annualBusinessIncome ?? 0) > 0) {
-    return 'ineligible_business'
-  }
+  if ((input.annualBusinessIncome ?? 0) > 0) return 'ineligible_business'
 
   const annualIncome = calcAnnualTotalIncome(input)
   const property = input.propertyTaxBase ?? 0
 
-  // 소득 초과
-  if (annualIncome > R.DEPENDENT_INCOME_LIMIT) {
-    return 'ineligible_income'
-  }
+  if (annualIncome > R.DEPENDENT_INCOME_LIMIT) return 'ineligible_income'
 
-  // 재산 초과
-  if (property > R.DEPENDENT_PROPERTY_LIMIT_2) {
-    return 'ineligible_property'
-  }
+  if (property > R.DEPENDENT_PROPERTY_LIMIT_2) return 'ineligible_property'
   if (property > R.DEPENDENT_PROPERTY_LIMIT_1 && annualIncome > R.DEPENDENT_PROPERTY_INCOME_LIMIT) {
     return 'ineligible_property'
   }
@@ -50,60 +34,105 @@ export function judgeDependentStatus(input: HealthInsuranceInput): DependentStat
 }
 
 /**
- * 지역가입자 월 보험료 계산
- * = (소득분 + 재산분) × 보험료율 → 실제로는 소득 기반 + 재산 점수제
- *
- * 단순화: 소득분 = 연소득 ÷ 12 × 7.09% + 재산점수 × 208.4원
+ * 배우자 피부양자 자격 단독 판정 (배우자 소득·재산 기준)
  */
+function judgeSpouseDependentStatus(
+  spouseAnnualIncome: number,
+  spousePropertyTaxBase: number
+): DependentStatus {
+  if (spouseAnnualIncome > R.DEPENDENT_INCOME_LIMIT) return 'ineligible_income'
+  if (spousePropertyTaxBase > R.DEPENDENT_PROPERTY_LIMIT_2) return 'ineligible_property'
+  if (
+    spousePropertyTaxBase > R.DEPENDENT_PROPERTY_LIMIT_1 &&
+    spouseAnnualIncome > R.DEPENDENT_PROPERTY_INCOME_LIMIT
+  ) {
+    return 'ineligible_property'
+  }
+  return 'eligible'
+}
+
+/**
+ * 부부 동반 탈락 시뮬레이션
+ * 배우자가 피부양자로 등록된 상태에서 본인 소득이 증가할 때
+ * 배우자까지 함께 탈락하는 시나리오를 경고
+ */
+export function checkCoupleDependent(input: HealthInsuranceInput): CoupleDependent | undefined {
+  if (!input.spouseMonthlyPension && !input.spouseAnnualOtherIncome) return undefined
+
+  const selfAnnualIncome = calcAnnualTotalIncome(input)
+  const selfStatus = judgeDependentStatus(input)
+  const selfEligible = selfStatus === 'eligible'
+
+  const spouseAnnualIncome =
+    (input.spouseMonthlyPension ?? 0) * 12 + (input.spouseAnnualOtherIncome ?? 0)
+  const spousePropertyTaxBase = input.spousePropertyTaxBase ?? 0
+  const spouseStatus = judgeSpouseDependentStatus(spouseAnnualIncome, spousePropertyTaxBase)
+  const spouseEligible = spouseStatus === 'eligible'
+
+  const bothDisqualified = !selfEligible && !spouseEligible
+
+  let warningMessage: string | undefined
+
+  if (!selfEligible && spouseEligible) {
+    warningMessage = `본인 연소득 ${(selfAnnualIncome / 10000).toFixed(0)}만원으로 피부양자 탈락. 배우자는 단독으로 피부양자 유지 가능합니다.`
+  } else if (!selfEligible && !spouseEligible) {
+    warningMessage = `⚠️ 부부 모두 피부양자 탈락. 본인 연소득 ${(selfAnnualIncome / 10000).toFixed(0)}만원 + 배우자 연소득 ${(spouseAnnualIncome / 10000).toFixed(0)}만원으로 각각 2,000만원 기준 초과. 부부 합산 건보료가 발생합니다.`
+  } else if (selfEligible && !spouseEligible) {
+    warningMessage = `배우자 연소득 ${(spouseAnnualIncome / 10000).toFixed(0)}만원으로 피부양자 탈락. 본인은 피부양자 유지 가능합니다.`
+  }
+
+  return {
+    selfEligible,
+    selfStatus,
+    selfAnnualIncome,
+    spouseEligible,
+    spouseAnnualIncome,
+    bothDisqualified,
+    warningMessage,
+  }
+}
+
 export function calcRegionMonthlyPremium(input: HealthInsuranceInput): number {
   const annualIncome = calcAnnualTotalIncome(input)
   const incomeMonthly = Math.round((annualIncome / 12) * R.EMPLOYEE_RATE)
-
   const propertyScore = calcPropertyScore(input.propertyTaxBase ?? 0)
   const propertyMonthly = Math.round(propertyScore * R.REGION_SCORE_UNIT)
-
   const premium = incomeMonthly + propertyMonthly
   return Math.max(premium, R.REGION_MIN_PREMIUM)
 }
 
-/**
- * 임의계속가입 월 보험료 (퇴직 전 보수 기준, 전액 본인 부담)
- */
 export function calcVoluntaryContinuePremium(prevMonthlySalary: number): number {
   return Math.round(prevMonthlySalary * R.EMPLOYEE_RATE)
 }
 
-/**
- * 직장가입자 월 보험료 (재취업 후, 50% 본인 부담)
- */
 export function calcEmployeePremium(monthlySalary: number): number {
   return Math.round((monthlySalary * R.EMPLOYEE_RATE) / 2)
 }
 
-/**
- * 장기요양보험료 계산 (건강보험료 × 12.95%)
- */
 export function calcLTCI(healthPremium: number): number {
   return Math.round(healthPremium * R.LTCI_RATE)
 }
 
-/**
- * 건보료 전체 시뮬레이션 메인 함수
- */
 export function calcHealthInsurance(input: HealthInsuranceInput): HealthInsuranceResult {
   const annualTotalIncome = calcAnnualTotalIncome(input)
   const dependentStatus = judgeDependentStatus(input)
   const dependentEligible = dependentStatus === 'eligible'
+  const coupleCheck = checkCoupleDependent(input)
+
+  const limitLabel = `${(R.DEPENDENT_INCOME_LIMIT / 10000).toFixed(0)}만원`
 
   const options: HealthPremiumOption[] = []
 
-  // ── 옵션 1: 피부양자 ───────────────────────────────────
-  const depNotes = []
+  // ── 옵션 1: 피부양자 ────────────────────────────────
+  const depNotes: string[] = []
   if (dependentEligible && input.hasSpouseWithInsurance) {
     depNotes.push('배우자 직장 건보에 피부양자 등록 → 보험료 0원')
-    depNotes.push(`연 합산소득 ${(annualTotalIncome / 10000).toFixed(0)}만원으로 3,400만원 기준 충족`)
+    depNotes.push(`연 합산소득 ${(annualTotalIncome / 10000).toFixed(0)}만원으로 ${limitLabel} 기준 충족`)
   } else if (dependentEligible && !input.hasSpouseWithInsurance) {
-    depNotes.push('소득·재산 기준은 충족하나 직장가입자 가족이 없어 피부양자 등록 불가')
+    depNotes.push(`소득·재산 기준 충족하나 직장가입자 가족 없어 피부양자 등록 불가`)
+  }
+  if (coupleCheck?.warningMessage) {
+    depNotes.push(coupleCheck.warningMessage)
   }
 
   const dependentAvailable = dependentEligible && (input.hasSpouseWithInsurance ?? false)
@@ -115,7 +144,7 @@ export function calcHealthInsurance(input: HealthInsuranceInput): HealthInsuranc
     available: dependentAvailable,
     unavailableReason: !dependentEligible
       ? dependentStatus === 'ineligible_income'
-        ? `연 합산소득 ${(annualTotalIncome / 10000).toFixed(0)}만원 → 3,400만원 초과`
+        ? `연 합산소득 ${(annualTotalIncome / 10000).toFixed(0)}만원 → ${limitLabel} 초과`
         : dependentStatus === 'ineligible_business'
         ? '사업소득 있으면 피부양자 불가 (금액 무관)'
         : '재산세 과표 기준 초과'
@@ -125,7 +154,7 @@ export function calcHealthInsurance(input: HealthInsuranceInput): HealthInsuranc
     notes: depNotes,
   })
 
-  // ── 옵션 2: 지역가입자 ────────────────────────────────
+  // ── 옵션 2: 지역가입자 ────────────────────────────
   const regionPremium = calcRegionMonthlyPremium(input)
   const regionLtci = calcLTCI(regionPremium)
   options.push({
@@ -143,8 +172,9 @@ export function calcHealthInsurance(input: HealthInsuranceInput): HealthInsuranc
     ],
   })
 
-  // ── 옵션 3: 임의계속가입 (최대 36개월) ────────────────
-  const voluntaryAvailable = input.yearsOfInsuredEmployment >= R.VOLUNTARY_CONTINUE_MIN_INSURED_MONTHS
+  // ── 옵션 3: 임의계속가입 ─────────────────────────
+  const voluntaryAvailable =
+    input.yearsOfInsuredEmployment >= R.VOLUNTARY_CONTINUE_MIN_INSURED_MONTHS
   const voluntaryPremium = calcVoluntaryContinuePremium(input.prevMonthlySalary)
   const voluntaryLtci = calcLTCI(voluntaryPremium)
   options.push({
@@ -157,15 +187,14 @@ export function calcHealthInsurance(input: HealthInsuranceInput): HealthInsuranc
       ? `직장 건보 가입 기간 ${input.yearsOfInsuredEmployment}개월 (18개월 이상 필요)`
       : undefined,
     notes: [
-      '퇴직 전 직장 보험료와 동일 (고용주 부담분도 본인이 전액 납부)',
+      '퇴직 전 직장 보험료와 동일 (고용주 부담분도 본인 전액 납부)',
       '최대 36개월 유지 가능',
       '이후 지역가입자로 자동 전환',
     ],
   })
 
-  // ── 추천 로직 ─────────────────────────────────────────
-  const availableOptions = options.filter((o) => o.available)
-  const cheapest = availableOptions.sort((a, b) => a.totalMonthly - b.totalMonthly)[0]
+  const availableOptions = options.filter(o => o.available)
+  const cheapest = [...availableOptions].sort((a, b) => a.totalMonthly - b.totalMonthly)[0]
 
   let recommendedOption: HealthInsuranceResult['recommendedOption'] = '지역가입자'
   let recommendedReason = ''
@@ -181,8 +210,7 @@ export function calcHealthInsurance(input: HealthInsuranceInput): HealthInsuranc
     recommendedReason = '해당 조건에서 지역가입자로 전환이 기본값입니다.'
   }
 
-  // 최고-최저 연간 절감액
-  const maxPremium = Math.max(...availableOptions.map((o) => o.totalMonthly))
+  const maxPremium = Math.max(...availableOptions.map(o => o.totalMonthly))
   const minPremium = cheapest?.totalMonthly ?? 0
   const annualSaving = (maxPremium - minPremium) * 12
 
@@ -190,6 +218,7 @@ export function calcHealthInsurance(input: HealthInsuranceInput): HealthInsuranc
     dependentStatus,
     dependentEligible,
     annualTotalIncome,
+    coupleCheck,
     options,
     recommendedOption,
     recommendedReason,
