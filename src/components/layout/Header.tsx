@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Shield } from 'lucide-react'
+import AuthButton from '@/components/auth/AuthButton'
 
 export default function Header() {
   return (
@@ -15,7 +16,7 @@ export default function Header() {
             <span>Second Life Planner</span>
           </Link>
 
-          <nav aria-label="주 메뉴">
+          <nav aria-label="주 메뉴" className="flex items-center gap-2">
             <ul className="flex items-center gap-1" role="list">
               <li>
                 <Link
@@ -28,12 +29,13 @@ export default function Header() {
               <li>
                 <Link
                   href="/#pricing"
-                  className="px-3 py-2 text-sm font-medium bg-accent text-white hover:bg-accent-600 rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ml-1"
+                  className="px-3 py-2 text-sm font-medium bg-accent text-white hover:bg-orange-700 rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
                 >
                   리포트 구매
                 </Link>
               </li>
             </ul>
+            <AuthButton />
           </nav>
         </div>
       </div>
