@@ -15,7 +15,7 @@ const schema = z.object({
   irpBalance: z.number().int().min(0),
   irpAnnualContribution: z.number().int().min(0),
   annualReturnRate: z.number().min(0).max(20),
-  annualPensionIncome: z.number({ invalid_type_error: '군인연금 연액 입력' }).int().min(0),
+  annualPensionIncome: z.number({ invalid_type_error: '공적연금 연액 입력' }).int().min(0),
 })
 type FormValues = z.infer<typeof schema>
 
@@ -82,7 +82,7 @@ export default function AssetOptimizerPage() {
                         {...register('retirementAge', { valueAsNumber: true })} />
                     </Field>
                   </div>
-                  <Field label="군인연금 연간 수령액 (원)" id="annualPensionIncome" error={errors.annualPensionIncome?.message} helper="건보료 영향 분석에 사용">
+                  <Field label="공적연금 연간 수령액 (원)" id="annualPensionIncome" error={errors.annualPensionIncome?.message} helper="건보료 영향 분석에 사용">
                     <input id="annualPensionIncome" type="text" inputMode="numeric" placeholder="예: 36,000,000"
                       className={inputCls(!!errors.annualPensionIncome)}
                       onChange={handleMoneyInput('annualPensionIncome')} />

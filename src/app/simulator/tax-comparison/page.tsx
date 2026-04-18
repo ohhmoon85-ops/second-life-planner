@@ -55,7 +55,7 @@ export default function TaxComparisonPage() {
       <div className="bg-primary text-white py-8 px-4">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">분리과세 vs 종합과세 비교</h1>
-          <p className="text-primary-200 text-base">군인연금 수령 시 납부세액 최적화 전략</p>
+          <p className="text-primary-200 text-base">공적연금 수령 시 납부세액 최적화 전략</p>
         </div>
       </div>
 
@@ -65,7 +65,7 @@ export default function TaxComparisonPage() {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
           <Info className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-blue-700 space-y-1">
-            <p className="font-medium">군인연금(공적연금)은 원칙적으로 종합과세 의무</p>
+            <p className="font-medium">공적연금(군인·공무원·사학·국민연금)은 원칙적으로 종합과세 의무</p>
             <p>단, 다른 소득이 없고 연금소득만 있으면 원천징수(5%)로 확정신고 면제 가능 (소득세법 §73①4호)</p>
             <p>이 계산기는 두 방식의 세부담 차이를 비교해 드립니다.</p>
           </div>
@@ -78,7 +78,7 @@ export default function TaxComparisonPage() {
             <div className="grid md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  군인연금 연간 수령액 (원) <span className="text-danger">*</span>
+                  공적연금 연간 수령액 (원) <span className="text-danger">*</span>
                 </label>
                 <input type="text" inputMode="numeric" placeholder="예: 36,000,000"
                   className={inputCls(!!errors.annualMilitaryPension)}
