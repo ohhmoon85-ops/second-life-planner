@@ -65,7 +65,7 @@ export default function ReemploymentPage() {
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">재취업 시나리오 비교</h1>
           <p className="text-primary-200 text-base">
-            공무원·공공기관·민간·자영업·무직 5가지 케이스별 군인연금 삭감액 + 건보료 + 실수령액 비교
+            공무원·공공기관·민간·자영업·무직 5가지 케이스별 공적연금 감액 + 건보료 + 실수령액 비교
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ export default function ReemploymentPage() {
                 <div className="bg-white rounded-lg border border-gray-200 p-5">
                   <h2 className="text-base font-semibold text-primary mb-4">연금 정보</h2>
                   <div className="space-y-4">
-                    <Field label="군인연금 월 수령액 (세전)" id="monthlyMilitaryPension" error={errors.monthlyMilitaryPension?.message}>
+                    <Field label="공적연금 월 수령액 (세전)" id="monthlyMilitaryPension" error={errors.monthlyMilitaryPension?.message}>
                       <MoneyInput id="monthlyMilitaryPension" onChange={handleMoneyInput('monthlyMilitaryPension')} hasError={!!errors.monthlyMilitaryPension} placeholder="예: 3,060,000" />
                     </Field>
                     <Field label="퇴직 직전 기준소득월액" id="prevMonthlySalary" error={errors.prevMonthlySalary?.message} helper="연금 정지액 계산 기준. 퇴직 전 3년 평균 월급">
@@ -105,9 +105,10 @@ export default function ReemploymentPage() {
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
                   <p className="font-medium mb-1">계산 기준 안내</p>
                   <ul className="space-y-1 text-xs">
-                    <li>· 공무원·공공기관·사립학교: 군인연금법 제33조 일부 정지</li>
-                    <li>· 민간기업·자영업: 연금 정지 없음</li>
-                    <li>· 정지액 = (연금 + 보수 - 퇴직 전 소득) ÷ 2</li>
+                    <li>· 공무원 재임용: 재직 중 연금 전액 정지</li>
+                    <li>· 공공기관·사립학교: 연금+보수가 퇴직전소득 160% 초과분의 50% 정지</li>
+                    <li>· 민간기업: 초과소득 구간별 30~70% 부분 정지</li>
+                    <li>· 자영업·무직: 연금 정지 없음</li>
                   </ul>
                 </div>
 

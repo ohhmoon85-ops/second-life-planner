@@ -19,14 +19,14 @@ export default function HomePage() {
       <section className="bg-gradient-to-br from-primary to-primary-700 text-white py-16 sm:py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-accent text-sm font-semibold uppercase tracking-widest mb-3">
-            4대 연금·건보료·재취업 통합 시뮬레이션
+            군인·공무원·교사 퇴직자를 위한 은퇴 설계 플랫폼
           </p>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-4">
             당신이 모르는 규정 하나가<br className="hidden sm:block" />
             <span className="text-accent"> 연 1,500만원 차이</span>를 만듭니다
           </h1>
           <p className="text-lg text-primary-200 mb-8 max-w-2xl mx-auto">
-            군인·공무원·사학·국민연금 + 건보료 피부양자 + 재취업 가능성을
+            공적연금(군인·공무원·사학·국민) + 건보료 피부양자 + 재취업 연금 감액을
             <br className="hidden sm:block" />
             ₩19,900 한 번으로 통합 시뮬레이션
           </p>
@@ -57,7 +57,7 @@ export default function HomePage() {
             혹시 이런 고민 있으신가요?
           </h2>
           <p className="text-center text-gray-500 mb-10">
-            4050 예비역·공직자가 가장 많이 놓치는 4가지
+            군인·공무원·교사 퇴직(예정)자가 가장 많이 놓치는 4가지
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -70,7 +70,7 @@ export default function HomePage() {
             <ProblemCard
               icon={<TrendingDown className="h-6 w-6 text-danger" />}
               title="재취업 가능성 미인지"
-              desc="전역 후 재취업 시 연금 일부 정지(연금법 시행령)를 모르면 연 1,500~3,000만원 손실 위험."
+              desc="퇴직 후 재취업 시 연금 일부·전액 정지(연금법 시행령)를 모르면 연 1,500~3,000만원 손실 위험."
               highlight="연 1,500~3,000만원 손실"
             />
             <ProblemCard
@@ -110,16 +110,16 @@ export default function HomePage() {
             <SolutionCard
               icon={<RefreshCw className="h-7 w-7 text-primary" />}
               title="재취업 5가지 시나리오"
-              desc="공무원·공공기관·민간·자영업·무직별 군인연금 삭감액 + 건보료 + 실수령액 비교"
+              desc="공무원·공공기관·민간·자영업·무직별 공적연금 감액 + 건보료 + 실수령액 비교"
               href="/simulator/reemployment"
               ctaLabel="시나리오 비교하기 →"
             />
             <SolutionCard
               icon={<Calculator className="h-7 w-7 text-primary" />}
-              title="군인연금 세금 계산"
-              desc="2026년 최신 군인연금법·소득세법 기준. 연금소득공제·지방소득세 포함 ±1% 보장"
-              href="/simulator/military"
-              ctaLabel="연금 계산하기 →"
+              title="공적연금 세금 분석"
+              desc="2026년 최신 연금법·소득세법 기준. 분리과세 vs 종합과세 비교, 연금소득공제·지방소득세 포함"
+              href="/simulator/tax-comparison"
+              ctaLabel="세금 비교하기 →"
             />
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function HomePage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {[
-                  ['군인·공무원 연금 통합', '✅', '⚠ 단독만', '❌', '✅'],
+                  ['군인·공무원·사학·국민연금 통합', '✅', '⚠ 단독만', '❌', '✅'],
                   ['건보료 피부양자 계산', '✅', '❌', '❌', '✅'],
                   ['재취업 시나리오 비교', '✅', '❌', '❌', '✅'],
                   ['세금 상세 분해', '✅', '⚠ 일부', '⚠ 일부', '✅'],
@@ -205,9 +205,9 @@ export default function HomePage() {
             <PricingCard
               name="무료 체험"
               price="₩0"
-              features={['군인연금 계산기', '세전/세후 월 수령액', '10년 물가연동 차트']}
+              features={['공적연금 계산기 (군인·공무원·사학·국민)', '세전/세후 월 수령액', '10년 물가연동 차트']}
               cta="무료로 시작"
-              ctaHref="/simulator/military"
+              ctaHref="/simulator/health-insurance"
               variant="outline"
             />
             <PricingCard
@@ -215,8 +215,8 @@ export default function HomePage() {
               price="₩19,900"
               badge="가장 많이 선택"
               features={[
-                '군인연금 + 건보료 분석',
-                '재취업 4가지 시나리오',
+                '공적연금 + 건보료 통합 분석',
+                '재취업 5가지 시나리오',
                 '20페이지 PDF 리포트',
                 '6개월 무료 규정 업데이트',
               ]}

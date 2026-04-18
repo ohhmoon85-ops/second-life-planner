@@ -66,7 +66,7 @@ export default function HealthInsurancePage() {
       <div className="bg-primary text-white py-8 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">건강보험료 시뮬레이터</h1>
-          <p className="text-primary-200 text-base">퇴직 후 건보료 옵션 비교 · 피부양자 자격 판정 · 부부 동반 탈락 시뮬레이션</p>
+          <p className="text-primary-200 text-base">군인·공무원·교사 퇴직자 건보료 옵션 비교 · 피부양자 자격 판정 · 부부 동반 탈락 시뮬레이션</p>
         </div>
       </div>
 
@@ -79,7 +79,7 @@ export default function HealthInsurancePage() {
               <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
 
                 <Card title="연금 정보">
-                  <Field label="군인연금 월 수령액 (세전, 원)" id="monthlyMilitaryPension" error={errors.monthlyMilitaryPension?.message} helper="국방부 인트라넷 계산기에서 확인한 세전 금액">
+                  <Field label="공적연금 월 수령액 (세전, 원)" id="monthlyMilitaryPension" error={errors.monthlyMilitaryPension?.message} helper="군인·공무원·사학·국민연금 합계 세전 수령액">
                     <MoneyInput id="monthlyMilitaryPension" onChange={handleMoneyInput('monthlyMilitaryPension')} hasError={!!errors.monthlyMilitaryPension} />
                   </Field>
                 </Card>
@@ -358,11 +358,11 @@ function EmptyState() {
       <div className="p-4 bg-blue-50 rounded-lg text-left max-w-sm mx-auto">
         <p className="text-sm font-medium text-blue-700 mb-2">이 계산기가 알려드리는 것</p>
         <ul className="text-sm text-blue-600 space-y-1">
-          <li>· 피부양자 자격 유지 가능 여부 (2,000만원 기준)</li>
-          <li>· 부부 동반 탈락 시뮬레이션</li>
+          <li>· 피부양자 자격 유지 가능 여부 (소득 2,000만원 기준)</li>
+          <li>· 배우자 동반 탈락 시뮬레이션</li>
           <li>· 지역가입자 전환 시 월 보험료</li>
           <li>· 임의계속가입 vs 지역가입자 비교</li>
-          <li>· 최적 선택 시 연간 절약액</li>
+          <li>· 최적 선택 시 연간 절약액 자동 계산</li>
         </ul>
       </div>
     </div>
