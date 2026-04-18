@@ -12,7 +12,7 @@ export default function PrivacyPage() {
         </div>
 
         <p className="text-sm text-gray-700 leading-relaxed">
-          Second Life Planner(이하 "서비스")는 개인정보보호법, 정보통신망 이용촉진 및 정보보호 등에 관한 법률 등
+          Second Life Planner(이하 &ldquo;서비스&rdquo;)는 개인정보보호법, 정보통신망 이용촉진 및 정보보호 등에 관한 법률 등
           관련 법령을 준수하며, 이용자의 개인정보를 안전하게 보호합니다.
         </p>
 
