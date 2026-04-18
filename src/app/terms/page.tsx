@@ -13,7 +13,7 @@ export default function TermsPage() {
 
         <Section title="제1조 (목적)">
           <p>
-            본 약관은 Second Life Planner(이하 "서비스")를 운영하는 문형철(이하 "회사")이 제공하는
+            본 약관은 Second Life Planner(이하 &ldquo;서비스&rdquo;)를 운영하는 문형철(이하 &ldquo;회사&rdquo;)이 제공하는
             은퇴 설계 시뮬레이션 서비스의 이용 조건 및 절차, 회사와 이용자의 권리·의무 및
             책임사항을 규정함을 목적으로 합니다.
           </p>
@@ -21,9 +21,9 @@ export default function TermsPage() {
 
         <Section title="제2조 (정의)">
           <ol className="list-decimal pl-5 space-y-1">
-            <li>"서비스"란 회사가 제공하는 공적연금 시뮬레이션, 건강보험료 계산, 재취업 시나리오 분석, AI 리포트 생성 등 일체의 온라인 서비스를 의미합니다.</li>
-            <li>"이용자"란 본 약관에 동의하고 서비스를 이용하는 개인을 의미합니다.</li>
-            <li>"유료 서비스"란 결제 후 이용 가능한 AI 리포트 생성 서비스를 의미합니다.</li>
+            <li>&ldquo;서비스&rdquo;란 회사가 제공하는 공적연금 시뮬레이션, 건강보험료 계산, 재취업 시나리오 분석, AI 리포트 생성 등 일체의 온라인 서비스를 의미합니다.</li>
+            <li>&ldquo;이용자&rdquo;란 본 약관에 동의하고 서비스를 이용하는 개인을 의미합니다.</li>
+            <li>&ldquo;유료 서비스&rdquo;란 결제 후 이용 가능한 AI 리포트 생성 서비스를 의미합니다.</li>
           </ol>
         </Section>
 
