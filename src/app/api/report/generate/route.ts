@@ -45,12 +45,12 @@ export async function POST(request: NextRequest) {
 
   const d = parsed.data
 
-  const prompt = `당신은 군인 및 공무원 퇴직자 전문 은퇴 설계 전문가입니다.
+  const prompt = `당신은 공직자(군인·공무원·교사) 퇴직자 전문 은퇴 설계 전문가입니다.
 아래 데이터를 바탕으로 맞춤형 은퇴 설계 리포트를 한국어로 작성하세요.
 
 ## 입력 데이터
 - 현재 나이: ${d.currentAge}세
-- 군인연금 월 수령액: ${d.monthlyMilitaryPension.toLocaleString('ko-KR')}원
+- 공적연금 월 수령액: ${d.monthlyMilitaryPension.toLocaleString('ko-KR')}원
 - 복무연수: ${d.serviceYears}년${d.rank ? ` / 최종 계급: ${d.rank}` : ''}
 - 최적 건보료 옵션: ${d.healthInsuranceOption} (월 ${d.monthlyHealthPremium.toLocaleString('ko-KR')}원)
 - 건보료 최적화 연간 절약액: ${d.annualSaving.toLocaleString('ko-KR')}원
@@ -75,7 +75,7 @@ ${d.targetMonthlyIncome ? `- 목표 월 생활비: ${d.targetMonthlyIncome.toLoc
 ### 3. 재취업 전략 (3페이지)
 ${d.bestReemploymentType
   ? `- ${d.bestReemploymentType} 재취업의 장단점 분석
-- 군인연금 감액 최소화 방법
+- 공적연금 감액 최소화 방법
 - 재취업 준비 로드맵 (6개월~1년)`
   : '- 재취업 없이 수입 다각화 방법\n- 자격증·강의·컨설팅 등 수입 창출 방안'}
 

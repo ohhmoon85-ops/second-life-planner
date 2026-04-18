@@ -82,7 +82,7 @@ export default function HomePage() {
             <ProblemCard
               icon={<Home className="h-6 w-6 text-accent" />}
               title="주택연금·퇴직금 조합 미활용"
-              desc="군인연금 + 주택연금 + 퇴직금 최적 조합을 모르면 노후 현금흐름이 불안정해집니다."
+              desc="공적연금 + 주택연금 + 퇴직금 최적 조합을 모르면 노후 현금흐름이 불안정해집니다."
               highlight="최적 조합 미활용"
             />
           </div>

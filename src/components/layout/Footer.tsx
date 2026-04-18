@@ -13,7 +13,7 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-3">법적 고지</h3>
             <p className="text-sm leading-relaxed">
               본 서비스는 시뮬레이션 도구이며 투자 조언이 아닙니다.
-              실제 연금 수령액은 공무원연금공단 및 군인공제회에 문의하세요.
+              실제 연금 수령액은 각 공단(공무원연금공단·군인공제회·사학연금공단·국민연금공단)에 문의하세요.
             </p>
           </div>
           <div>

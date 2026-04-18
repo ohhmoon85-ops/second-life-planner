@@ -196,7 +196,7 @@ export default function ReportPage() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <FormRow label="현재 나이" id="currentAge" type="number" placeholder="예: 55" value={form.currentAge} onChange={set('currentAge')} />
                 <FormRow label="최종 계급" id="rank" placeholder="예: 중령" value={form.rank} onChange={set('rank')} />
-                <FormRow label="군인연금 월 수령액 (원)" id="monthlyMilitaryPension" placeholder="예: 3,200,000" value={form.monthlyMilitaryPension} onChange={set('monthlyMilitaryPension')} />
+                <FormRow label="공적연금 월 수령액 (원)" id="monthlyMilitaryPension" placeholder="예: 3,200,000" value={form.monthlyMilitaryPension} onChange={set('monthlyMilitaryPension')} />
                 <FormRow label="복무연수" id="serviceYears" type="number" placeholder="예: 25" value={form.serviceYears} onChange={set('serviceYears')} />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">최적 건보료 옵션</label>

@@ -114,7 +114,7 @@ export function calcTaxComparison(input: TaxComparisonInput): TaxComparisonResul
       effectiveRate: effectiveSep,
       note: canAvoidFiling
         ? '타 소득 없음 → 원천징수(5%)로 확정신고 면제 가능 (소득세법 §73①4호)'
-        : '공적연금(군인연금)은 종합과세 의무 — 타 소득과 합산 신고 필요',
+        : '공적연금(군인·공무원·사학·국민연금)은 종합과세 의무 — 타 소득과 합산 신고 필요',
     },
     saving,
     recommendation,

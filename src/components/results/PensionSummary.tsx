@@ -82,7 +82,7 @@ export default function PensionSummary({ result }: Props) {
           </ul>
           <p className="mt-3 text-xs text-gray-500">
             ※ 본 계산은 시뮬레이션 도구이며 투자 조언이 아닙니다.
-            실제 수령액은 공무원연금공단/군인공제회에 문의하세요.
+            실제 수령액은 각 공단(공무원연금공단·군인공제회·사학연금공단·국민연금공단)에 문의하세요.
           </p>
         </div>
       )}
